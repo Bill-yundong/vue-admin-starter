@@ -4,8 +4,8 @@
 
     <el-tree
       ref="tree2"
-      :data="data2"
-      :props="defaultProps"
+      :data="processedData"
+      :props="treeProps"
       :filter-node-method="filterNode"
       class="filter-tree"
       default-expand-all
@@ -16,11 +16,11 @@
 
 <script>
 export default {
-
   data() {
     return {
       filterText: '',
-      data2: [{
+      // 原始树形数据
+      sourceData: [{
         id: 1,
         label: 'Level one 1',
         children: [{
@@ -55,8 +55,11 @@ export default {
           label: 'Level two 3-2'
         }]
       }],
-      defaultProps: {
-        children: 'children',
+      // BUG: 处理后的数据
+      processedData: [],
+      // BUG: 使用了错误的属性名
+      treeProps: {
+        child: 'children',  // 错误：应该是 children
         label: 'label'
       }
     }
@@ -66,8 +69,33 @@ export default {
       this.$refs.tree2.filter(val)
     }
   },
-
+  created() {
+    // BUG: 处理数据
+    this.processTreeData()
+  },
   methods: {
+    processTreeData() {
+      // 步骤1: 数据清洗
+      const cleaned = this.cleanData(this.sourceData)
+      
+      // 步骤2: 数据转换 - BUG在这里！
+      this.processedData = this.transformData(cleaned)
+    },
+    cleanData(data) {
+      // 清洗数据，移除无效节点
+      return data.filter(item => item && item.id !== undefined)
+    },
+    transformData(data) {
+      // BUG: 错误的转换逻辑 - 只返回一级节点，丢失了所有子节点
+      return data.map(item => {
+        // 错误：创建新对象时没有包含 children
+        return {
+          id: item.id,
+          label: item.label
+          // BUG: 丢失了 children 属性！
+        }
+      })
+    },
     filterNode(value, data) {
       if (!value) return true
       return data.label.indexOf(value) !== -1
@@ -75,4 +103,3 @@ export default {
   }
 }
 </script>
-

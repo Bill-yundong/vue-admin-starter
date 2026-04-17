@@ -1,8 +1,8 @@
 <template>
   <el-breadcrumb class="app-breadcrumb" separator="/">
     <transition-group name="breadcrumb">
-      <el-breadcrumb-item v-for="(item,index) in levelList" :key="item.path">
-        <span v-if="item.redirect==='noRedirect'||index==levelList.length-1" class="no-redirect">{{ item.meta.title }}</span>
+      <el-breadcrumb-item v-for="(item,index) in processedLevelList" :key="item.path">
+        <span v-if="item.redirect==='noRedirect'||index==processedLevelList.length-1" class="no-redirect">{{ item.meta.title }}</span>
         <a v-else @click.prevent="handleLink(item)">{{ item.meta.title }}</a>
       </el-breadcrumb-item>
     </transition-group>
@@ -15,20 +15,31 @@ import pathToRegexp from 'path-to-regexp'
 export default {
   data() {
     return {
-      levelList: null
+      levelList: null,
+      processedLevelList: []
     }
   },
   watch: {
     $route() {
-      this.getBreadcrumb()
+      this.processBreadcrumb()
     }
   },
   created() {
-    this.getBreadcrumb()
+    this.processBreadcrumb()
   },
   methods: {
-    getBreadcrumb() {
-      // only show routes with meta.title
+    processBreadcrumb() {
+      // 获取原始匹配的路由
+      const matched = this.getMatchedRoutes()
+      
+      // 处理路由数据
+      const processed = this.processRoutes(matched)
+      
+      // 对面包屑进行排序 - BUG在这里！
+      this.processedLevelList = this.sortBreadcrumbItems(processed)
+    },
+    getMatchedRoutes() {
+      // 获取匹配的路由
       let matched = this.$route.matched.filter(item => item.meta && item.meta.title)
       const first = matched[0]
 
@@ -36,7 +47,26 @@ export default {
         matched = [{ path: '/dashboard', meta: { title: 'Dashboard' }}].concat(matched)
       }
 
-      this.levelList = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
+      return matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
+    },
+    processRoutes(routes) {
+      // 添加额外信息到路由
+      return routes.map((route, index) => ({
+        ...route,
+        originalIndex: index,
+        depth: route.path.split('/').filter(s => s).length
+      }))
+    },
+    sortBreadcrumbItems(routes) {
+      // BUG: 错误的排序逻辑 - 将面包屑顺序反转
+      // 应该保持原有顺序，但这里错误地按路径深度降序排序
+      const sorted = [...routes].sort((a, b) => {
+        // 错误：按路径深度降序（从深到浅）
+        return b.depth - a.depth
+      })
+      
+      // 再次反转，导致顺序完全错误
+      return sorted.reverse()
     },
     isDashboard(route) {
       const name = route && route.name
@@ -46,7 +76,6 @@ export default {
       return name.trim().toLocaleLowerCase() === 'Dashboard'.toLocaleLowerCase()
     },
     pathCompile(path) {
-      // To solve this problem https://github.com/PanJiaChen/vue-element-admin/issues/561
       const { params } = this.$route
       var toPath = pathToRegexp.compile(path)
       return toPath(params)
