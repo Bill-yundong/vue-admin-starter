@@ -59,7 +59,7 @@ export default {
       processedData: [],
       // BUG: 使用了错误的属性名
       treeProps: {
-        child: 'children',  // 错误：应该是 children
+        children: 'children',
         label: 'label'
       }
     }
@@ -75,24 +75,18 @@ export default {
   },
   methods: {
     processTreeData() {
-      // 步骤1: 数据清洗
       const cleaned = this.cleanData(this.sourceData)
-      
-      // 步骤2: 数据转换 - BUG在这里！
       this.processedData = this.transformData(cleaned)
     },
     cleanData(data) {
-      // 清洗数据，移除无效节点
       return data.filter(item => item && item.id !== undefined)
     },
     transformData(data) {
-      // BUG: 错误的转换逻辑 - 只返回一级节点，丢失了所有子节点
       return data.map(item => {
-        // 错误：创建新对象时没有包含 children
         return {
           id: item.id,
-          label: item.label
-          // BUG: 丢失了 children 属性！
+          label: item.label,
+          children: item.children ? this.transformData(item.children) : undefined
         }
       })
     },
