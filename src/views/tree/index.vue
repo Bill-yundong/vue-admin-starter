@@ -75,10 +75,14 @@ export default {
   },
   methods: {
     processTreeData() {
+      // 步骤1: 数据清洗
       const cleaned = this.cleanData(this.sourceData)
+
+      // 步骤2: 数据转换 - 已修复子节点丢失问题
       this.processedData = this.transformData(cleaned)
     },
     cleanData(data) {
+      // 清洗数据，移除无效节点
       return data.filter(item => item && item.id !== undefined)
     },
     transformData(data) {
@@ -86,6 +90,7 @@ export default {
         return {
           id: item.id,
           label: item.label,
+          // 已修复：递归处理所有子节点
           children: item.children ? this.transformData(item.children) : undefined
         }
       })

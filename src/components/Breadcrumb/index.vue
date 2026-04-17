@@ -29,6 +29,7 @@ export default {
   },
   methods: {
     processBreadcrumb() {
+      // 获取原始匹配的路由
       let matched = this.$route.matched.filter(item => item.meta && item.meta.title)
       const first = matched[0]
 
@@ -37,6 +38,7 @@ export default {
       }
 
       this.levelList = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
+      // 已修复：保持路由匹配的原始顺序，不再执行错误的排序逻辑
       this.processedLevelList = this.levelList
     },
     isDashboard(route) {

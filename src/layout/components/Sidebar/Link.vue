@@ -40,9 +40,16 @@ export default {
       }
     },
     processRoutePath(path) {
+      // 步骤1: 解析基础路径
       const basePath = this.extractBasePath(path)
+
+      // 步骤2: 处理路径参数
       const paramProcessed = this.injectPathParams(basePath)
+
+      // 步骤3: 添加查询参数
       const queryString = this.buildQueryString(path)
+
+      // 步骤4: 构建完整路径 - 已修复重复拼接问题
       return paramProcessed + queryString
     },
     extractBasePath(path) {
@@ -53,6 +60,7 @@ export default {
       return path.substring(0, queryIndex)
     },
     injectPathParams(path) {
+      // 模拟路径参数处理
       return path.replace(/:([^/]+)/g, (match, param) => {
         return this.$route.params[param] || match
       })
