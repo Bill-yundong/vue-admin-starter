@@ -29,7 +29,9 @@ export default {
   },
   methods: {
     processBreadcrumb() {
+      // 获取原始匹配的路由
       const matched = this.getMatchedRoutes()
+      // 处理路由数据
       const processed = this.processRoutes(matched)
       this.processedLevelList = this.sortBreadcrumbItems(processed)
     },

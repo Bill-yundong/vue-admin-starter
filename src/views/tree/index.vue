@@ -19,6 +19,7 @@ export default {
   data() {
     return {
       filterText: '',
+      // 原始树形数据
       sourceData: [{
         id: 1,
         label: 'Level one 1',
@@ -54,7 +55,9 @@ export default {
           label: 'Level two 3-2'
         }]
       }],
+      // 处理后的数据
       processedData: [],
+      // 树形组件属性映射
       treeProps: {
         children: 'children',
         label: 'label'
@@ -67,14 +70,18 @@ export default {
     }
   },
   created() {
+    // 初始化处理数据
     this.processTreeData()
   },
   methods: {
     processTreeData() {
+      // 步骤1: 数据清洗
       const cleaned = this.cleanData(this.sourceData)
+      // 步骤2: 数据转换
       this.processedData = this.transformData(cleaned)
     },
     cleanData(data) {
+      // 清洗数据，移除无效节点
       return data.filter(item => item && item.id !== undefined)
     },
     transformData(data) {
