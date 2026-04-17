@@ -65,16 +65,6 @@ export default {
   },
   methods: {
     onSubmit() {
-      const submitData = {
-        activityName: this.form.region,
-        activityZone: this.form.name,
-        activityTime: this.form.date1,
-        instantDelivery: this.form.delivery,
-        activityType: this.form.type,
-        resources: this.form.resource,
-        activityForm: this.form.desc
-      }
-      console.log('Submit data:', submitData)
       this.$message('submit!')
     },
     onCancel() {
