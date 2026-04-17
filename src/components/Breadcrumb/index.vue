@@ -30,16 +30,6 @@ export default {
   methods: {
     processBreadcrumb() {
       // 获取原始匹配的路由
-      const matched = this.getMatchedRoutes()
-      
-      // 处理路由数据
-      const processed = this.processRoutes(matched)
-      
-      // 对面包屑进行排序 - BUG在这里！
-      this.processedLevelList = this.sortBreadcrumbItems(processed)
-    },
-    getMatchedRoutes() {
-      // 获取匹配的路由
       let matched = this.$route.matched.filter(item => item.meta && item.meta.title)
       const first = matched[0]
 
@@ -47,26 +37,9 @@ export default {
         matched = [{ path: '/dashboard', meta: { title: 'Dashboard' }}].concat(matched)
       }
 
-      return matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
-    },
-    processRoutes(routes) {
-      // 添加额外信息到路由
-      return routes.map((route, index) => ({
-        ...route,
-        originalIndex: index,
-        depth: route.path.split('/').filter(s => s).length
-      }))
-    },
-    sortBreadcrumbItems(routes) {
-      // BUG: 错误的排序逻辑 - 将面包屑顺序反转
-      // 应该保持原有顺序，但这里错误地按路径深度降序排序
-      const sorted = [...routes].sort((a, b) => {
-        // 错误：按路径深度降序（从深到浅）
-        return b.depth - a.depth
-      })
-      
-      // 再次反转，导致顺序完全错误
-      return sorted.reverse()
+      this.levelList = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
+      // 已修复：保持路由匹配的原始顺序，不再执行错误的排序逻辑
+      this.processedLevelList = this.levelList
     },
     isDashboard(route) {
       const name = route && route.name
