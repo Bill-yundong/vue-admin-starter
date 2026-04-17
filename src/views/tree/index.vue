@@ -57,9 +57,8 @@ export default {
       }],
       // BUG: 处理后的数据
       processedData: [],
-      // 修复：使用正确的属性名
       treeProps: {
-        children: 'children', // Element UI Tree 组件使用 children
+        children: 'children',
         label: 'label'
       }
     }
@@ -86,13 +85,11 @@ export default {
       return data.filter(item => item && item.id !== undefined)
     },
     transformData(data) {
-      // 修复：递归处理树形数据，保留所有子节点
       return data.map(item => {
         const newItem = {
           id: item.id,
           label: item.label
         }
-        // 如果有子节点，递归处理
         if (item.children && item.children.length > 0) {
           newItem.children = this.transformData(item.children)
         }

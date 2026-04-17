@@ -75,7 +75,6 @@ export default {
       return path.substring(queryIndex)
     },
     assembleFinalPath(basePath, queryString) {
-      // 修复：直接返回基础路径，不再重复拼接
       let result = basePath
 
       // 添加查询参数

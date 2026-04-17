@@ -58,8 +58,6 @@ export default {
       }))
     },
     sortBreadcrumbItems(routes) {
-      // 修复：保持面包屑原有顺序，按照路由匹配顺序显示
-      // 面包屑应该按照路由层级从浅到深显示
       return routes
     },
     isDashboard(route) {
