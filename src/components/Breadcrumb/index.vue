@@ -31,10 +31,10 @@ export default {
     processBreadcrumb() {
       // 获取原始匹配的路由
       const matched = this.getMatchedRoutes()
-      
+
       // 处理路由数据
       const processed = this.processRoutes(matched)
-      
+
       // 对面包屑进行排序 - BUG在这里！
       this.processedLevelList = this.sortBreadcrumbItems(processed)
     },
@@ -58,15 +58,9 @@ export default {
       }))
     },
     sortBreadcrumbItems(routes) {
-      // BUG: 错误的排序逻辑 - 将面包屑顺序反转
-      // 应该保持原有顺序，但这里错误地按路径深度降序排序
-      const sorted = [...routes].sort((a, b) => {
-        // 错误：按路径深度降序（从深到浅）
-        return b.depth - a.depth
-      })
-      
-      // 再次反转，导致顺序完全错误
-      return sorted.reverse()
+      // 修复：保持面包屑原有顺序，按照路由匹配顺序显示
+      // 面包屑应该按照路由层级从浅到深显示
+      return routes
     },
     isDashboard(route) {
       const name = route && route.name

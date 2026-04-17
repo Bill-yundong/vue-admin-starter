@@ -42,16 +42,16 @@ export default {
     processRoutePath(path) {
       // 步骤1: 解析基础路径
       const basePath = this.extractBasePath(path)
-      
+
       // 步骤2: 处理路径参数
       const paramProcessed = this.injectPathParams(basePath)
-      
+
       // 步骤3: 添加查询参数
       const queryString = this.buildQueryString(path)
-      
+
       // 步骤4: 构建完整路径 - BUG在这里！
       const finalPath = this.assembleFinalPath(paramProcessed, queryString)
-      
+
       return finalPath
     },
     extractBasePath(path) {
@@ -75,23 +75,14 @@ export default {
       return path.substring(queryIndex)
     },
     assembleFinalPath(basePath, queryString) {
-      // BUG: 路径重复拼接 - 核心错误
-      // 错误地将路径重复一次，导致 /table 变成 /table/table
+      // 修复：直接返回基础路径，不再重复拼接
       let result = basePath
-      
-      // 错误：去除开头的斜杠后拼接
-      if (basePath.startsWith('/')) {
-        const pathWithoutSlash = basePath.substring(1)
-        result = basePath + pathWithoutSlash
-      } else {
-        result = basePath + basePath
-      }
-      
+
       // 添加查询参数
       if (queryString) {
         result += queryString
       }
-      
+
       return result
     }
   }
